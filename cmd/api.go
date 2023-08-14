@@ -32,8 +32,8 @@ func StartHTTP(ctx context.Context, container *infra.Container) {
 	}))
 
 	app.Get("/parking-info", container.ParkingHandler.Info)
-	app.Post("/parking/occupy/:vehicle", container.ParkingHandler.Occupy)
-	app.Post("/parking/release/:vehicle", container.ParkingHandler.Release)
+	app.Post("/parking/occupy/", container.ParkingHandler.Occupy)
+	app.Post("/parking/release/", container.ParkingHandler.Release)
 
 	err := app.Listen(":8080")
 	if err != nil {

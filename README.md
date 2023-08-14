@@ -22,21 +22,21 @@ go run main.go
     }
     ```
   
-* ### `POST` `localhost:8080/parking/occupy/:vehicle`
+* ### `POST` `localhost:8080/parking/occupy`
 * _Descrição_: Endpoint para ocupar a vaga livre do estacionamento
 * _:vehicle_: Opções: **car / motorbike / van**
-    * `RESPONSE`
+    * `Body`
   ```JSON
     {
-      "success"
+      "name": ""
     }
     ```
-* ### `POST` `localhost:8080/parking/release/:vehicle`
+* ### `POST` `localhost:8080/parking/release`
 * _Descrição_: Endpoint para desacupar uma vaga e voltar a ficar livre
 * _:vehicle_: Opções: **car / motorbike / van**
-    * `RESPONSE`
+    * `Body`
   ```JSON
     {
-      "success"
+      "name": ""
     }
     ```
