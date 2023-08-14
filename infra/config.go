@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	ServerName         string
-	Environment        string
-	TotalParkingSpaces int
+	ServerName              string
+	Environment             string
+	TotalParkingSpaces      int
+	TotalLargeParkingSpaces int
 }
 
 func NewConfig() Config {
@@ -21,13 +22,19 @@ func NewConfig() Config {
 		}
 	}
 
-	number, err := strconv.Atoi(os.Getenv("TOTAL_PARKING_SPACES"))
+	parking, err := strconv.Atoi(os.Getenv("TOTAL_PARKING_SPACES"))
 	if err != nil {
 		log.Fatalln("Error convert string to int, total parking spaces env.")
 	}
+	largeParking, err := strconv.Atoi(os.Getenv("TOTAL_PARKING_SPACES"))
+	if err != nil {
+		log.Fatalln("Error convert string to int, total large parking spaces env.")
+	}
+
 	return Config{
-		ServerName:         os.Getenv("SERVER_NAME"),
-		Environment:        os.Getenv("ENVIRONMENT"),
-		TotalParkingSpaces: number,
+		ServerName:              os.Getenv("SERVER_NAME"),
+		Environment:             os.Getenv("ENVIRONMENT"),
+		TotalParkingSpaces:      parking,
+		TotalLargeParkingSpaces: largeParking,
 	}
 }

@@ -3,10 +3,10 @@ package service
 import (
 	"ProjetoEstacionamento/entity"
 	"ProjetoEstacionamento/user_case/response"
-	"errors"
 )
 
-var m = make(map[int]*entity.ModelParking)
+var parking = make(map[int]*entity.ModelParking)
+var largeParking = make(map[int]*entity.ModelParking)
 
 type InterfaceParkingService interface {
 	Info() response.InfoParking
@@ -15,17 +15,13 @@ type InterfaceParkingService interface {
 }
 
 type ParkingService struct {
-	TotalParking int
+	TotalParking      int
+	TotalLargeParking int
 }
 
-func NewParkingService(TotalParking int) ParkingService {
-	for n := 0; n < TotalParking; n++ {
-		m[n] = &entity.ModelParking{
-			ParkingSpot: false,
-			VehicleType: "",
-		}
-	}
-	return ParkingService{TotalParking}
+func NewParkingService(TotalParking, TotalLargeParking int) ParkingService {
+	setUpParking(TotalParking, TotalLargeParking)
+	return ParkingService{TotalParking, TotalLargeParking}
 }
 
 func (p ParkingService) Info() response.InfoParking {
@@ -34,8 +30,8 @@ func (p ParkingService) Info() response.InfoParking {
 	var countCar int
 	var countMotorbike int
 	var countVan int
-	for _, item := range m {
 
+	for _, item := range parking {
 		if item.VehicleType == "car" {
 			countCar++
 		}
@@ -71,9 +67,9 @@ func (p ParkingService) Occupy(vehicle string) error {
 	}
 	parkingControl := 0
 	for n := 0; n < p.TotalParking; n++ {
-		if !m[n].ParkingSpot {
-			m[n].ParkingSpot = true
-			m[n].VehicleType = data.Name
+		if !parking[n].ParkingSpot {
+			parking[n].ParkingSpot = true
+			parking[n].VehicleType = data.Name
 			parkingControl++
 			if parkingControl >= data.Parking {
 				break
@@ -90,9 +86,9 @@ func (p ParkingService) Release(vehicle string) error {
 	}
 	parkingControl := 0
 	for n := 0; n < p.TotalParking; n++ {
-		if m[n].ParkingSpot && m[n].VehicleType == data.Name {
-			m[n].ParkingSpot = false
-			m[n].VehicleType = ""
+		if parking[n].ParkingSpot && parking[n].VehicleType == data.Name {
+			parking[n].ParkingSpot = false
+			parking[n].VehicleType = ""
 			parkingControl++
 			if parkingControl >= data.Parking {
 				break
@@ -100,29 +96,4 @@ func (p ParkingService) Release(vehicle string) error {
 		}
 	}
 	return nil
-}
-
-func (p ParkingService) checkVehicle(vehicle string) (entity.ModelVehicle, error) {
-	var data = entity.ModelVehicle{}
-	switch vehicle {
-	case "car":
-		data = entity.ModelVehicle{
-			Name:    "car",
-			Parking: 1,
-		}
-	case "motorbike":
-		data = entity.ModelVehicle{
-			Name:    "motorbike",
-			Parking: 1,
-		}
-	case "van":
-		data = entity.ModelVehicle{
-			Name:    "van",
-			Parking: 3,
-		}
-	default:
-		return data, errors.New("wrong vehicle type")
-	}
-
-	return data, nil
 }

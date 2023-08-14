@@ -15,9 +15,12 @@ func NewContainer(config Config) *Container {
 	container := &Container{
 		Config: config,
 	}
-
-	container.ParkingService = service.NewParkingService(container.Config.TotalParkingSpaces)
-	container.ParkingHandler = handler.NewParkingHandler(container.ParkingService)
-
+	container.ParkingService = service.NewParkingService(
+		container.Config.TotalParkingSpaces,
+		container.Config.TotalLargeParkingSpaces,
+	)
+	container.ParkingHandler = handler.NewParkingHandler(
+		container.ParkingService,
+	)
 	return container
 }
