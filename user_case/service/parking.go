@@ -39,7 +39,7 @@ func (p ParkingService) Info() response.Info {
 			VehicleInformation: response.VehicleInformation{
 				Car:       resultParking.VehicleInformation.Car,
 				Motorbike: resultParking.VehicleInformation.Motorbike,
-				Van:       resultParking.VehicleInformation.Van,
+				Van:       resultParking.VehicleInformation.Van / 3,
 			},
 		},
 	}
