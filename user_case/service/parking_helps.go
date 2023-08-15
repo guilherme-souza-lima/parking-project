@@ -2,6 +2,7 @@ package service
 
 import (
 	"ProjetoEstacionamento/entity"
+	"ProjetoEstacionamento/user_case/response"
 	"errors"
 )
 
@@ -44,4 +45,27 @@ func (p ParkingService) checkVehicle(vehicle string) (entity.ModelVehicle, error
 	}
 
 	return data, nil
+}
+
+func (p ParkingService) countVehicleLargeParking() response.InfoLargeParking {
+	var countVanLargeParking int
+	var countLargeParkingOccupied int
+	var countLargeParkingFree int
+	for _, item := range largeParking {
+		if item.VehicleType == entity.VAN {
+			countVanLargeParking++
+		}
+
+		if item.ParkingSpot {
+			countLargeParkingOccupied++
+			continue
+		}
+		countLargeParkingFree++
+	}
+
+	return response.InfoLargeParking{
+		Free:     countLargeParkingFree,
+		Occupied: countLargeParkingOccupied,
+		Van:      countVanLargeParking,
+	}
 }

@@ -26,7 +26,7 @@ func NewConfig() Config {
 	if err != nil {
 		log.Fatalln("Error convert string to int, total parking spaces env.")
 	}
-	largeParking, err := strconv.Atoi(os.Getenv("TOTAL_PARKING_SPACES"))
+	largeParking, err := strconv.Atoi(os.Getenv("TOTAL_LARGE_PARKING_SPACES"))
 	if err != nil {
 		log.Fatalln("Error convert string to int, total large parking spaces env.")
 	}

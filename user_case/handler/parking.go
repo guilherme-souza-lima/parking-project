@@ -24,11 +24,11 @@ func (e ParkingHandler) Occupy(c *fiber.Ctx) error {
 	if err := c.BodyParser(&vehicle); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Error body parser request. Error: " + err.Error())
 	}
-	err := e.InterfaceParkingService.Occupy(vehicle.Name)
+	result, err := e.InterfaceParkingService.Occupy(vehicle.Name)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
-	return c.Status(fiber.StatusOK).JSON("success")
+	return c.Status(fiber.StatusOK).JSON(result)
 }
 
 func (e ParkingHandler) Release(c *fiber.Ctx) error {
@@ -36,9 +36,9 @@ func (e ParkingHandler) Release(c *fiber.Ctx) error {
 	if err := c.BodyParser(&vehicle); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON("Error body parser request. Error: " + err.Error())
 	}
-	err := e.InterfaceParkingService.Release(vehicle.Name)
+	result, err := e.InterfaceParkingService.Release(vehicle.Name)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
-	return c.Status(fiber.StatusOK).JSON("success")
+	return c.Status(fiber.StatusOK).JSON(result)
 }

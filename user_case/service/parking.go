@@ -10,8 +10,8 @@ var largeParking = make(map[int]*entity.ModelParking)
 
 type InterfaceParkingService interface {
 	Info() response.InfoParking
-	Occupy(vehicle string) error
-	Release(vehicle string) error
+	Occupy(vehicle string) (string, error)
+	Release(vehicle string) (string, error)
 }
 
 type ParkingService struct {
@@ -30,6 +30,8 @@ func (p ParkingService) Info() response.InfoParking {
 	var countCar int
 	var countMotorbike int
 	var countVan int
+
+	resultLargeParking := p.countVehicleLargeParking()
 
 	for _, item := range parking {
 		if item.VehicleType == "car" {
@@ -50,6 +52,11 @@ func (p ParkingService) Info() response.InfoParking {
 	}
 
 	return response.InfoParking{
+		InfoLargeParking: response.InfoLargeParking{
+			Free:     resultLargeParking.Free,
+			Occupied: resultLargeParking.Occupied,
+			Van:      resultLargeParking.Van,
+		},
 		Free:     countFree,
 		Occupied: countOccupied,
 		VehicleInformation: response.VehicleInformation{
@@ -60,11 +67,22 @@ func (p ParkingService) Info() response.InfoParking {
 	}
 }
 
-func (p ParkingService) Occupy(vehicle string) error {
+func (p ParkingService) Occupy(vehicle string) (string, error) {
 	data, err := p.checkVehicle(vehicle)
 	if err != nil {
-		return err
+		return "", err
 	}
+
+	if data.Name == entity.VAN {
+		for n := 0; n < p.TotalLargeParking; n++ {
+			if !largeParking[n].ParkingSpot {
+				largeParking[n].ParkingSpot = true
+				largeParking[n].VehicleType = data.Name
+				return "success", nil
+			}
+		}
+	}
+
 	parkingControl := 0
 	for n := 0; n < p.TotalParking; n++ {
 		if !parking[n].ParkingSpot {
@@ -72,17 +90,17 @@ func (p ParkingService) Occupy(vehicle string) error {
 			parking[n].VehicleType = data.Name
 			parkingControl++
 			if parkingControl >= data.Parking {
-				break
+				return "success", nil
 			}
 		}
 	}
-	return nil
+	return "all parking are occupied", nil
 }
 
-func (p ParkingService) Release(vehicle string) error {
+func (p ParkingService) Release(vehicle string) (string, error) {
 	data, err := p.checkVehicle(vehicle)
 	if err != nil {
-		return err
+		return "", err
 	}
 	parkingControl := 0
 	for n := 0; n < p.TotalParking; n++ {
@@ -91,9 +109,20 @@ func (p ParkingService) Release(vehicle string) error {
 			parking[n].VehicleType = ""
 			parkingControl++
 			if parkingControl >= data.Parking {
-				break
+				return "success", nil
 			}
 		}
 	}
-	return nil
+
+	if data.Name == entity.VAN {
+		for n := 0; n < p.TotalLargeParking; n++ {
+			if largeParking[n].ParkingSpot && largeParking[n].VehicleType == data.Name {
+				largeParking[n].ParkingSpot = false
+				largeParking[n].VehicleType = ""
+				return "success", nil
+			}
+		}
+	}
+
+	return "all parking are free", nil
 }
