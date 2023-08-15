@@ -69,3 +69,39 @@ func (p ParkingService) countVehicleLargeParking() response.InfoLargeParking {
 		Van:      countVanLargeParking,
 	}
 }
+
+func (p ParkingService) countVehicleParking() response.InfoParking {
+	var countFree int
+	var countOccupied int
+	var countCar int
+	var countMotorbike int
+	var countVan int
+
+	for _, item := range parking {
+		if item.VehicleType == "car" {
+			countCar++
+		}
+		if item.VehicleType == "motorbike" {
+			countMotorbike++
+		}
+		if item.VehicleType == "van" {
+			countVan++
+		}
+
+		if item.ParkingSpot {
+			countOccupied++
+			continue
+		}
+		countFree++
+	}
+
+	return response.InfoParking{
+		Free:     countFree,
+		Occupied: countOccupied,
+		VehicleInformation: response.VehicleInformation{
+			Car:       countCar,
+			Motorbike: countMotorbike,
+			Van:       countVan,
+		},
+	}
+}

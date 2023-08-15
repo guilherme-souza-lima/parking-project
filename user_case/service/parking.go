@@ -9,7 +9,7 @@ var parking = make(map[int]*entity.ModelParking)
 var largeParking = make(map[int]*entity.ModelParking)
 
 type InterfaceParkingService interface {
-	Info() response.InfoParking
+	Info() response.Info
 	Occupy(vehicle string) (string, error)
 	Release(vehicle string) (string, error)
 }
@@ -24,45 +24,23 @@ func NewParkingService(TotalParking, TotalLargeParking int) ParkingService {
 	return ParkingService{TotalParking, TotalLargeParking}
 }
 
-func (p ParkingService) Info() response.InfoParking {
-	var countFree int
-	var countOccupied int
-	var countCar int
-	var countMotorbike int
-	var countVan int
-
+func (p ParkingService) Info() response.Info {
 	resultLargeParking := p.countVehicleLargeParking()
-
-	for _, item := range parking {
-		if item.VehicleType == "car" {
-			countCar++
-		}
-		if item.VehicleType == "motorbike" {
-			countMotorbike++
-		}
-		if item.VehicleType == "van" {
-			countVan++
-		}
-
-		if item.ParkingSpot {
-			countOccupied++
-			continue
-		}
-		countFree++
-	}
-
-	return response.InfoParking{
+	resultParking := p.countVehicleParking()
+	return response.Info{
 		InfoLargeParking: response.InfoLargeParking{
 			Free:     resultLargeParking.Free,
 			Occupied: resultLargeParking.Occupied,
 			Van:      resultLargeParking.Van,
 		},
-		Free:     countFree,
-		Occupied: countOccupied,
-		VehicleInformation: response.VehicleInformation{
-			Car:       countCar,
-			Motorbike: countMotorbike,
-			Van:       countVan / 3,
+		InfoParking: response.InfoParking{
+			Free:     resultParking.Free,
+			Occupied: resultParking.Occupied,
+			VehicleInformation: response.VehicleInformation{
+				Car:       resultParking.VehicleInformation.Car,
+				Motorbike: resultParking.VehicleInformation.Motorbike,
+				Van:       resultParking.VehicleInformation.Van,
+			},
 		},
 	}
 }
